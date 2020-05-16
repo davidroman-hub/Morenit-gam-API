@@ -10,7 +10,7 @@ exports.signup = (req, res) => {
     User.findOne({ email }).exec((err, user) => {
         if (user) {
             return res.status(400).json({
-                error: 'Email is taken'
+                error: 'Este Email ya esta en registrado'
             });
         }
     });
@@ -25,7 +25,7 @@ exports.signup = (req, res) => {
             });
         }
         res.json({
-            message: 'Signup success! Please signin'
+            message: 'Registro Completado! Ya puedes iniciar Sesión'
         });
     });
 };
