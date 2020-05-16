@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 const _ = require('lodash');
 
+// signup
+
+
 exports.signup = (req, res) => {
     // console.log('REQ BODY ON SIGNUP', req.body);
     const { name, email, password } = req.body;
@@ -26,6 +29,35 @@ exports.signup = (req, res) => {
         }
         res.json({
             message: 'Registro Completado! Ya puedes iniciar Sesión'
+        });
+    });
+};
+
+// Sign in
+
+
+exports.signin = (req, res) => {
+    const { email, password } = req.body;
+    // check if user exist
+    User.findOne({ email }).exec((err, user) => {
+        if (err || !user) {
+            return res.status(400).json({
+                error: 'Usuario con ese email no existe porfavor REGISTRATE'
+            });
+        }
+        // authenticate
+        if (!user.authenticate(password)) {
+            return res.status(400).json({
+                error: 'El E-mail y la contraseña no coinciden!'
+            });
+        }
+        // generate a token and send to client
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const { _id, name, email, role } = user;
+
+        return res.json({
+            token,
+            user: { _id, name, email, role }
         });
     });
 };
