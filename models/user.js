@@ -4,6 +4,15 @@ const crypto = require('crypto');
 // user schema
 const userSchema = new mongoose.Schema(
     {
+        username: {
+            type: String,
+            trim: true,
+            required: true,
+            max: 12,
+            unique: true,
+            index: true,
+            lowercase: true
+        } ,
         name: {
             type: String,
             trim: true,
@@ -17,18 +26,22 @@ const userSchema = new mongoose.Schema(
             unique: true,
             lowercase: true
         },
+        profile: {
+            type: String,
+            required: true
+        },
         hashed_password: {
             type: String,
             required: true
         },
         salt: String,
         role: {
-            type: String,
-            default: 'subscriber'
+            type: Number,
+            default: 0
         },
-        history: {
-            type: Array,
-            default: []
+        photo: {
+            data: Buffer,
+            contentType:String
         },
         resetPasswordLink: {
             data: String,

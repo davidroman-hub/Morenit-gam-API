@@ -2,36 +2,70 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 const _ = require('lodash');
+const shortId = require('shortid')
+
 
 // signup
 
 
-exports.signup = (req, res) => {
-    // console.log('REQ BODY ON SIGNUP', req.body);
-    const { name, email, password } = req.body;
+// exports.signup = (req, res) => {
+//     // console.log('REQ BODY ON SIGNUP', req.body);
+//     const { name, email, password } = req.body;
 
-    User.findOne({ email }).exec((err, user) => {
+//     User.findOne({ email }).exec((err, user) => {
+//         if (user) {
+//             return res.status(400).json({
+//                 error: 'Este Email ya esta en registrado'
+//             });
+//         }
+//     });
+
+//     let newUser = new User({ name, email, password });
+
+//     newUser.save((err, success) => {
+//         if (err) {
+//             console.log('SIGNUP ERROR', err);
+//             return res.status(400).json({
+//                 error: err
+//             });
+//         }
+//         res.json({
+//             message: 'Registro Completado! Ya puedes iniciar Sesión'
+//         });
+//     });
+// };
+
+
+exports.signup = (req, res) => {
+    // console.log(req.body);
+    User.findOne({ email: req.body.email }).exec((err, user) => {
         if (user) {
             return res.status(400).json({
-                error: 'Este Email ya esta en registrado'
+                error: 'Este E-mail ya esta en uso.'
             });
         }
-    });
 
-    let newUser = new User({ name, email, password });
+        const { name, email, password } = req.body;
+        let username = shortId.generate();
+        let profile = `${process.env.CLIENT_URL}/profile/${username}`;
 
-    newUser.save((err, success) => {
-        if (err) {
-            console.log('SIGNUP ERROR', err);
-            return res.status(400).json({
-                error: err
+        let newUser = new User({ name, email, password, profile, username });
+        newUser.save((err, success) => {
+            if (err) {
+                return res.status(400).json({
+                    error: err
+                });
+            }
+            // res.json({
+            //     user: success
+            // });
+            res.json({
+                message: 'Registro Completado!, Porfavor inicia Sesion'
             });
-        }
-        res.json({
-            message: 'Registro Completado! Ya puedes iniciar Sesión'
         });
     });
 };
+
 
 // Sign in
 
@@ -53,14 +87,23 @@ exports.signin = (req, res) => {
         }
         // generate a token and send to client
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        const { _id, name, email, role } = user;
+        const { _id,username,name, email, role } = user;
 
         return res.json({
             token,
-            user: { _id, name, email, role }
+            user: { _id,username,name, email, role }
         });
     });
 };
+
+/// signout
+
+exports.signout = (req,res) => {
+    res.clearCookie('token');
+    res.json({
+        message: 'Haz Salido de la Sesión'
+    })
+}
 
 
 
