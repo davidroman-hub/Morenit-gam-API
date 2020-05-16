@@ -61,3 +61,41 @@ exports.signin = (req, res) => {
         });
     });
 };
+
+
+
+/// little helpers
+
+exports.requireSignin = expressJwt({
+    secret: process.env.JWT_SECRET // req.user._id
+});
+
+exports.isAuth = (req, res, next) => {
+    let user = req.profile && req.auth && req.profile._id == req.auth._id;
+    if (!user) {
+        return res.status(403).json({
+            error: 'Access denied'
+        });
+    }
+    next();
+};
+
+
+exports.adminMiddleware = (req, res, next) => {
+    User.findById({ _id: req.user._id }).exec((err, user) => {
+        if (err || !user) {
+            return res.status(400).json({
+                error: 'User not found'
+            });
+        }
+
+        if (user.role !== 'admin') {
+            return res.status(400).json({
+                error: 'Admin resource. Access denied.'
+            });
+        }
+
+        req.profile = user;
+        next();
+    });
+};

@@ -23,7 +23,7 @@ mongoose
 
 // import routes
 const authRoutes = require('./routes/auth');
-
+const categoryRoutes = require('./routes/category');
 
 
 // app middlewares
@@ -37,7 +37,7 @@ if ((process.env.NODE_ENV = 'development')) {
 
 // middleware
 app.use('/api', authRoutes);
-
+app.use('/api', categoryRoutes)
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
