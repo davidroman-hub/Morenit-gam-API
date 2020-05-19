@@ -1,6 +1,6 @@
 const Category = require('../models/category');
 const { errorHandler } = require('../helpers/dbErrorHandler')
-
+const slugify = require('slugify')
 
 //// find category by id ////
 
@@ -24,8 +24,24 @@ exports.read = (req,res) => {
 
 
 //// create category method //// 
+// exports.create = (req,res) => {
+//     const category = new Category(req.body)
+//     category.save((err, data) => {
+//         if(err){
+//             return res.status(400).json({
+//                 error: errorHandler(err)
+//             })
+//         }
+//         res.json({data})
+//     })
+// } 
+
+
 exports.create = (req,res) => {
-    const category = new Category(req.body)
+    const {name} = req.body
+    let slug = slugify(name).toLowerCase()
+    let category = new Category({name, slug})
+
     category.save((err, data) => {
         if(err){
             return res.status(400).json({
