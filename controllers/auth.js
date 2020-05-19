@@ -142,3 +142,39 @@ exports.adminMiddleware = (req, res, next) => {
         next();
     });
 };
+
+
+/// auth middlewares
+
+exports.authMiddlewares = (req,res,next) => {
+    const authUserId = req.user._id;
+    User.findById({_id: authUserId}).exec((err,user) => {
+        if (err || !user) {
+            return res.status(400).json({
+                error:'Usuario no encontrado!'
+            })
+        } 
+        req.profile = user
+        next()
+    })
+}
+// admin Middleware
+
+exports.adminMiddlewares = (req,res,next) => {
+    const adminUserId = req.user._id;
+    User.findById({_id: adminUserId}).exec((err,user) => {
+        if (err || !user) {
+            return res.status(400).json({
+                error:'Usuario no encontrado!'
+            })
+        } 
+        if(user.role !== 1){
+            return res.status(400).json({
+                error:'Recursos de administrador. Acceso Negado'
+            })
+        }
+        req.profile = user
+        next()
+    })
+}
+
