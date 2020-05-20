@@ -25,6 +25,8 @@ mongoose
 const authRoutes = require('./routes/auth');
 const categoryRoutes = require('./routes/category');
 const userRoutes = require('./routes/user');
+const tagRoutes = require('./routes/tags');
+
 
 // app middlewares
 app.use(morgan('dev'));
@@ -37,8 +39,9 @@ if ((process.env.NODE_ENV === 'development')) {
 
 // middleware
 app.use('/api', authRoutes);
-app.use('/api', categoryRoutes)
+app.use('/api', categoryRoutes);
 app.use('/api', userRoutes);
+app.use('/api', tagRoutes)
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
