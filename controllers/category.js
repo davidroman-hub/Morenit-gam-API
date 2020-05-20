@@ -17,24 +17,22 @@ exports.categoryById = (req,res,next,id) => {
 }
 
 //// read method of category ////
-exports.read = (req,res) => {
-    return res.json(req.category)
-}
+exports.read = (req, res) => {
+    const slug = req.params.slug.toLowerCase();
+
+    Category.findOne({ slug }).exec((err, category) => {
+        if (err) {
+            return res.status(400).json({
+                error: errorHandler(err)
+            });
+        }
+        res.json(category);
+    });
+};
 
 
 
 //// create category method //// 
-// exports.create = (req,res) => {
-//     const category = new Category(req.body)
-//     category.save((err, data) => {
-//         if(err){
-//             return res.status(400).json({
-//                 error: errorHandler(err)
-//             })
-//         }
-//         res.json({data})
-//     })
-// } 
 
 
 exports.create = (req,res) => {
@@ -54,20 +52,21 @@ exports.create = (req,res) => {
 
 //// category remove method ////
 
-exports.remove = (req,res)=>{
-    const category = req.category;
-    category.remove((err,data)=>{
-        if(err){
+
+exports.remove = (req, res) => {
+    const slug = req.params.slug.toLowerCase();
+
+    Category.findOneAndRemove({ slug }).exec((err, data) => {
+        if (err) {
             return res.status(400).json({
-                error:errorHandler(err)
-            })
+                error: errorHandler(err)
+            });
         }
         res.json({
-            message:"Categoria eliminada con éxito."
-        })
-    })
-}
-
+            message: 'Categoria Eliminada'
+        });
+    });
+};
 
 //// update category ////
 
