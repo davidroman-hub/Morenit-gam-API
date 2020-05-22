@@ -26,7 +26,7 @@ const authRoutes = require('./routes/auth');
 const categoryRoutes = require('./routes/category');
 const userRoutes = require('./routes/user');
 const tagRoutes = require('./routes/tags');
-
+const blogRoutes = require('./routes/blog')
 
 // app middlewares
 app.use(morgan('dev'));
@@ -41,7 +41,8 @@ if ((process.env.NODE_ENV === 'development')) {
 app.use('/api', authRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', userRoutes);
-app.use('/api', tagRoutes)
+app.use('/api', tagRoutes);
+app.use('/api', blogRoutes);
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
