@@ -9,6 +9,9 @@ const { errorHandler } = require('../helpers/dbErrorHandler')
 const fs = require('fs')
 const {smartTrim} = require('../helpers/blog')
 
+/// create a blog
+
+
 exports.create = (req, res) => {
     let form =  new formidable.IncomingForm()
     form.keepExtensions = true
@@ -96,3 +99,48 @@ exports.create = (req, res) => {
         })
     })
 };
+
+
+
+
+/// list blog
+
+exports.list = (req,res) => {
+    Blog.find({})
+    .populate('categories','_id name slug')
+    .populate('tags','_id name slug')
+    .populate('postedBy','_id name username')
+    .select('_id title slug excerpt categories tags postedBy createdAt updateAt')
+    .exec((err,data) => {
+        if (err){
+            return res.json({
+                error:errorHandler(err)
+            })
+        }  
+        return res.json(data)
+    })
+}
+
+// list with the categories and tags
+
+exports.listAllBlogsCategoriesTags = (req,res) => {
+    //
+}
+
+// read one post
+
+exports.read = (req,res) => {
+    //
+}
+
+// remove the post
+exports.remove = (req,res) => {
+    //
+}
+
+
+// update the post
+
+exports.update = (req,res) => {
+    //
+}
