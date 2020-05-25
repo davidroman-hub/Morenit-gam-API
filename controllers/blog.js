@@ -206,5 +206,69 @@ exports.remove = (req,res) => {
 // update the post
 
 exports.update = (req,res) => {
-    //
+        
+        const slug = req.params.slug.toLowerCase()
+      
+        Blog.findOne({slug}).exec((err, oldBlog) => {
+            if(err){
+                return res.status(400).json({
+                    error:errorHandler(err)
+                })
+            }
+            let form =  new formidable.IncomingForm()
+            form.keepExtensions = true;
+
+            form.parse(req, (err, fields, files) => {
+                if(err){
+                    return res.status(400).json({
+                        error:'La imagen no se pudo cargar'
+                    })
+                }
+               let slugBeforeMerge = oldBlog.slug
+               oldBlog = _.merge( oldBlog, fields )
+               oldBlog.slug = slugBeforeMerge
+               
+               const {body, mdesc, categories, tags} = fields
+                
+               if(body){
+                    oldBlog.excerpt = smartTrim(body, 320, '', '...')
+                    oldBlog.mdesc = stripHtml(body.substring(0,160))
+                }
+
+                if(categories){
+                    oldBlog.categories = categories.split(',')
+                    //oldBlog.mdesc = stripHtml(body.substring(0,160))
+                }
+                
+
+                if(tags){
+                    oldBlog.tags = tags.split(',')
+                    //oldBlog.mdesc = stripHtml(body.substring(0,160))
+                }
+                
+                if(files.photo) {
+                    if(files.photo.size > 10000000) {
+                        return res.status(400).json({
+                            error:'La imagen debe de ser de menos de 1 MB'
+                        })
+                    }
+                    oldBlog.photo.data = fs.readFileSync(files.photo.path)
+                    oldBlog.photo.contentType = files.photo.type
+                }
+                oldBlog.save((err, result) => {
+                    if(err){
+                        return res.status(400).json({
+                            error: errorHandler(err)
+                        })
+                    }
+                   // res.json(result)
+            
+                           res.json(result) 
+                        
+                    })
+                })
+            })
+        
+    
+    
 }
