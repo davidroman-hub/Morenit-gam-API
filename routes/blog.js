@@ -6,7 +6,7 @@ const { create, list, listAllBlogsCategoriesTags,read, remove, update } = requir
 
 router.post('/blog',requireSignin, adminMiddlewares, create )
 router.get('/blogs', list)
-router.post('/blogs-categories-tags/', listAllBlogsCategoriesTags)
+router.post('/blogs-categories-tags', listAllBlogsCategoriesTags)
 router.get('/blog/:slug', read)
 router.delete('/blog/:slug',requireSignin,adminMiddlewares ,remove)
 router.put('/blog/:slug', requireSignin,adminMiddlewares,update)
